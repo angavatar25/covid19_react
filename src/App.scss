@@ -1,0 +1,76 @@
+@import './colour.scss';
+
+body {
+  background-color: $backgroundColour !important;
+  color: $white !important;
+}
+
+.card-container {
+  height: 50%;
+  .card-content {
+    height: auto;
+    text-align: center;
+    padding: 20px;
+    margin: 0 5px;
+    margin-top: 10px;
+    .label {margin: 0;}
+    .case_amount {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+}
+
+.home_container {
+  .first_column {
+    .card-container {
+      .card-content {
+        background-color: $backgroundColour;
+      }
+    }
+  }
+  .second_column {
+    .card-container {
+      .card-content {
+        background-color: $secondaryColour;
+      }
+    }
+    .weather-container {
+      .search_container {
+        margin: 30px 0;
+        form {
+          display: flex;
+          input[type=search] {
+            background-color: transparent;
+            border: 1px solid white;
+            border-radius: 4px;
+            padding: 10px;
+            width: 400px;
+            margin-right: 20px;
+          }
+          button {
+            background-color: $blue;
+            color: $white;
+            border: none;
+            width: 100px;
+            border-radius: 4px;
+          }
+        }
+      }
+      .search_result {
+        background-color: $secondaryColour;
+        margin-top: 50px;
+        .province {
+          text-align: center;
+          padding: 30px 0;
+        }
+        .card-container {
+          .card-content {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+}
