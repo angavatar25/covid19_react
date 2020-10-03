@@ -15,7 +15,14 @@ class CovidHome extends React.Component<any,any> {
             total_dirawat: "",
             total_sembuh: "",
             total_meninggal: "",
+            total_positif_provinsi: "",
+            total_sembuh_provinsi: "",
+            total_meninggal_provinsi: "",
             hari_dan_tanggal: '',
+            provinsi: '',
+            provinsiResult: [],
+            provinsiSearchResult: true,
+            message: false
         }
     }
 
@@ -23,6 +30,61 @@ class CovidHome extends React.Component<any,any> {
         this.penambahanPerHari();
         this.penambahanArray();
         this.totalCovid();
+        this.dataProvinsii();
+    }
+
+    provinsiInputHandler = (e:any) => {
+        this.setState({
+            provinsi: e.target.value
+        })
+    }
+
+    dataProvinsii = () => {
+        const api_key = 'https://indonesia-covid-19.mathdro.id/api/provinsi/'
+        Axios.get(api_key)
+        .then((response) => {
+            const data_provinsi = response.data.data.map((provinsi: any) => {
+                return {
+                    key: provinsi.fid,
+                    text: provinsi.provinsi,
+                    kasus_positif: provinsi.kasusPosi,
+                    kasus_negatif: provinsi.kasusSemb,
+                    kasus_meninggal: provinsi.kasusMeni
+                }
+            })
+            this.setState({
+                provinsiResult: data_provinsi
+            })
+        })
+    }
+
+    dataProvinsi = (e:any) => {
+        const api_key = 'https://indonesia-covid-19.mathdro.id/api/provinsi/'
+        e.preventDefault();
+        Axios.get(api_key)
+        .then((response) => {
+            const data_provinsi = response.data.data.map((provinsi: any) => {
+                return {
+                    key: provinsi.fid,
+                    text: provinsi.provinsi,
+                    kasus_positif: provinsi.kasusPosi,
+                    kasus_negatif: provinsi.kasusSemb,
+                    kasus_meninggal: provinsi.kasusMeni
+                }
+            })
+            this.setState({
+                provinsiResult: data_provinsi
+            })
+            if (this.state.provinsiResult.find((province:any) => province.text === this.state.provinsi)) {
+                this.setState({
+                    provinsiSearchResult: true,
+                    message: false
+                })
+            } else this.setState({
+                provinsiSearchResult: false,
+                message: true
+            })
+        })
     }
 
     penambahanArray = () => {
@@ -92,10 +154,53 @@ class CovidHome extends React.Component<any,any> {
             penambahan_jumlah_meninggal, 
             penambahan_jumlah_sembuh, 
             penambahan_jumlah_dirawat,
-            hari_dan_tanggal
+            hari_dan_tanggal,
+            provinsi,
+            provinsiSearchResult
         } = this.state;
 
-        let total_covid = this.props
+        var {searchResult, message} = this.props
+
+        if(provinsiSearchResult) {
+            searchResult = (
+                <div>
+                    {this.state.provinsiResult.filter((province:any) => province.text === this.state.provinsi).map((filterResult:any) => (
+                        <div className="search_result">
+                            <h1 className="province">{filterResult.text}</h1>
+                            <div className="row mx-0" style={{justifyContent: 'center',}}>
+                                <div className="col-md-3 card-container px-0">
+                                    <div className="card-content">
+                                        <p className="label">Jumlah Positif</p>
+                                        <p className="case_amount">{filterResult.kasus_positif} orang</p>
+                                    </div>
+                                </div>
+                                <div className="col-md-3 card-container px-0">
+                                    <div className="card-content">
+                                        <p className="label">Jumlah Sembuh</p>
+                                        <p className="case_amount">{filterResult.kasus_negatif} orang</p>
+                                    </div>
+                                </div>
+                                <div className="col-md-3 card-container px-0">
+                                    <div className="card-content">
+                                        <p className="label">Jumlah Meninggal</p>
+                                        <p className="case_amount">{filterResult.kasus_meninggal} orang</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )
+        }
+        else if(!provinsiSearchResult) {
+            message = (
+                <div>
+                    <h3>
+                        <strong>Provinsi Tidak Tersedia</strong>
+                    </h3>
+                </div>
+            )
+        }
 
         const {total_dirawat, 
             total_meninggal, 
@@ -183,41 +288,14 @@ class CovidHome extends React.Component<any,any> {
                         <div className="weather-container">
                             <h1>Informasi COVID 19 Per Provinsi</h1>
                             <div className="search_container">
-                                <form action="">
-                                    <input type="search" name="input_text" id="input_text" placeholder="Masukkan nama provinsi"/>
-                                    <button>Search</button>
+                                <form onSubmit={this.dataProvinsi}>
+                                    <input type="search" value={provinsi} onChange={this.provinsiInputHandler} name="input_text" id="input_text" placeholder="Masukkan nama provinsi"/>
+                                    <button type="submit">Search</button>
                                 </form>
                             </div>
-                            <div className="search_result">
-                                <h1 className="province">West Java</h1>
-                                <div className="row mx-0">
-                                    <div className="col-md-3 card-container px-0">
-                                        <div className="card-content">
-                                            <p className="label">Jumlah Meninggal</p>
-                                            <p className="case_amount">{total_meninggal} orang</p>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-3 card-container px-0">
-                                        <div className="card-content">
-                                            <p className="label">Jumlah Meninggal</p>
-                                            <p className="case_amount">{total_meninggal} orang</p>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-3 card-container px-0">
-                                        <div className="card-content">
-                                            <p className="label">Jumlah Meninggal</p>
-                                            <p className="case_amount">{total_meninggal} orang</p>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-3 card-container px-0">
-                                        <div className="card-content">
-                                            <p className="label">Jumlah Meninggal</p>
-                                            <p className="case_amount">{total_meninggal} orang</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                        {searchResult}
+                        {message}
                     </div>
                 </div>
             </div>
